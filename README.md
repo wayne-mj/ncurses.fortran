@@ -1,4 +1,4 @@
-# NCURSES wrapper for Fortran
+## NCURSES wrapper for Fortran
 
 One probably already exists, I could find it if I looked hard enough, but where is the fun in that?
 
