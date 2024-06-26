@@ -3,7 +3,7 @@ program formexample
     use ncursesmod
     implicit none
 
-    integer(c_int) :: ch, y, x, gx, gy, i
+    integer(c_int) :: ch, y, x, f1x, f2x, i
     character(len=20) :: field1, field2, temp
     integer :: field_length
     type(c_ptr) :: win
@@ -19,8 +19,8 @@ program formexample
     y = 10
     x = 40
 
-    gx =0
-    gx =0
+    f1x =0
+    f2x =0
 
     
     call refresh()
@@ -41,32 +41,39 @@ program formexample
         case (9)    ! tab
             if (y == 10) then
                 y = 12
-                x = 40
+                if (f1x .gt. 40) then 
+                    x = f1x
+                else
+                    x = 40
+                end if
             else
                 y = 10
-                x = 40
+                if (f2x .gt. 40) then
+                    x = f2x
+                else
+                    x = 40
+                end if
             end if
             call move(y, x)
             call refresh()
         case (127)    ! backspace
             if (y == 10) then
                 !if (len_trim(field1) .gt. 0) then
-                    field1 = " "
-                    gx = getcurx(win)
-                    do i = 40, gx
-                        call mvprintw(10,i, "*") 
-                        call wrefresh(win)                       
-                    end do
+                    ! field1 = " "
+                    field1 = field1(1:len_trim(field1)-1) // " "
                     call move(10, 30)
-                    !call clrtoeol()
+                    call clrtoeol()
                     call mvprintw(10,30, "field 1:> " // trim(field1) // achar(0))
+                    call refresh()
                 !end if
             else if (y == 12) then
                 !if (len_trim(field2) .gt. 0) then
-                    field2 = " "
+                    ! field2 = " "
+                    field2 = field2(1:len_trim(field2)-1) // " "
                     call move(12, 30)
                     call clrtoeol()
                     call mvprintw(12,30, "field 2:> " // trim(field2) // achar(0))
+                    call refresh()
                 !end if
             end if
             
@@ -74,26 +81,14 @@ program formexample
             exit
         case default
             if ((ch .ge. 32 .and. ch .le. 126)) then
-                gx = getcurx(win)
-                gy = getcury(win)
+                !gx = getcurx(win)
+                !gy = getcury(win)
                 if (y == 10) then
-                    if (gx .lt. 50) then 
-                        field1 = field1(1:len_trim(field1)) // char(ch)
-                        call echo()
-                        call refresh()
-                    else if (gx .ge. 50) then
-                        call noecho()
-                        call refresh()
-                    end if 
+                    field1 = field1(1:len_trim(field1)) // char(ch)
+                    f1x = getcurx(win)
                 else if (y == 12) then
-                    if (gx .lt. 50) then
-                        field2 = field2(1:len_trim(field2)) // char(ch)
-                        call echo()
-                        call refresh()
-                    else if (gx .ge. 50) then
-                        call noecho()
-                        call refresh()
-                    end if
+                    field2 = field2(1:len_trim(field2)) // char(ch)
+                    f2x = getcurx(win)
                 end if
             end if
         end select
